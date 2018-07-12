@@ -44,9 +44,10 @@ def make_chains(text_string):
 def make_text(chains):
     """Take dictionary of Markov chains; return random text."""
 
-    key = choice(chains.keys())
+    key = choice(list(chains.keys()))
     words = [key[0], key[1]]
-    while key in chains:
+    words_str = str(key[0]) + " " + str(key[1])
+    while key in chains and len(words_str)<=140:
         # Keep looping until we have a key that isn't in the chains
         # (which would mean it was the end of our original text).
         #
@@ -54,8 +55,13 @@ def make_text(chains):
         # it would run for a very long time.
 
         word = choice(chains[key])
+  
+        if len(words_str) + len(word)>139:
+            break
         words.append(word)
+        words_str += " " + str(word)
         key = (key[1], word)
+
 
     return " ".join(words)
 
@@ -66,19 +72,31 @@ def tweet(chains):
     # Use Python os.environ to get at environmental variables
     # Note: you must run `source secrets.sh` before running this file
     # to make sure these environmental variables are set.
+    api = twitter.Api(
+        consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
+        consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
+        access_token_key=os.environ['TWITTER_ACCESS_TOKEN_KEY'],
+        access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'])
+    # This will print info about credentials to make sure they're correct
+    api.VerifyCredentials()
+    # Send a tweet
+    status = api.PostUpdate(chains)
+    print(status.text)
 
-    pass
+
 
 
 # Get the filenames from the user through a command line prompt, ex:
 # python markov.py green-eggs.txt shakespeare.txt
 filenames = sys.argv[1:]
-
+#filenames = markov-chains
 # Open the files and turn them into one long string
 text = open_and_read_file(filenames)
 
 # Get a Markov chain
 chains = make_chains(text)
 
+text1 = make_text(chains)
 # Your task is to write a new function tweet, that will take chains as input
 # tweet(chains)
+tweet(text1)
