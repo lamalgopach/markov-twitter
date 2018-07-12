@@ -85,6 +85,25 @@ def tweet(chains):
 
 
 
+def tweet_again(chains):
+    """ Generates tweets in a loop until user prompts to quit 
+        Takes chain as input, calls the tweet function in a loop while user enters "yes"
+        else quits
+        
+    """
+    user_answer = "y"
+    while user_answer != "q":
+
+        # text1 is the random text we get from the dictionary "chains" 
+        text1 = make_text(chains)
+        # tweet out text1 (the random text)
+        tweet(text1)
+        # Ask user if we repeat
+        user_answer = input("Enter to tweet again [q to quit] > [return]")
+
+
+
+
 
 # Get the filenames from the user through a command line prompt, ex:
 # python markov.py green-eggs.txt shakespeare.txt
@@ -96,7 +115,7 @@ text = open_and_read_file(filenames)
 # Get a Markov chain
 chains = make_chains(text)
 
-text1 = make_text(chains)
+#text1 = make_text(chains)
 # Your task is to write a new function tweet, that will take chains as input
 # tweet(chains)
-tweet(text1)
+tweet_again(chains)
